@@ -61,7 +61,7 @@ public class EstadoController {
 			if(estadoAtual != null) {
 				BeanUtils.copyProperties(estado, estadoAtual, "id");
 				
-				cadastroEstadoService.salvar(estadoAtual);
+				estadoAtual = cadastroEstadoService.salvar(estadoAtual);
 				return ResponseEntity.ok(estadoAtual);
 			}
 			
