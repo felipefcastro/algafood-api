@@ -84,5 +84,4 @@ public class TesteController {
 		return restauranteRepository.buscarPrimeiro();
 	}
 	
-	//Próxima aula 6.1
 }
