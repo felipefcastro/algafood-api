@@ -31,7 +31,7 @@ public class EstadoController {
 	private EstadoRepository estadoRepository;
 	
 	@Autowired
-	private CadastroEstadoService cadastroEstadoService;
+	private CadastroEstadoService cadastroEstado;
 	
 	@GetMapping
 	public List<Estado> listar() {
@@ -39,10 +39,10 @@ public class EstadoController {
 	}
 	
 	@GetMapping("/{estadoId}")
-	public ResponseEntity<Estado> buscar(@PathVariable Long estadoId){
+	public ResponseEntity<Estado> buscar(@PathVariable Long estadoId) {
 		Optional<Estado> estado = estadoRepository.findById(estadoId);
 		
-		if(estado.isPresent()) {
+		if (estado.isPresent()) {
 			return ResponseEntity.ok(estado.get());
 		}
 		
@@ -50,39 +50,39 @@ public class EstadoController {
 	}
 	
 	@PostMapping
-	@ResponseStatus(code = HttpStatus.CREATED)
-	public Estado adiconar(@RequestBody Estado estado){
-		return cadastroEstadoService.salvar(estado);
+	@ResponseStatus(HttpStatus.CREATED)
+	public Estado adicionar(@RequestBody Estado estado) {
+		return cadastroEstado.salvar(estado);
 	}
 	
 	@PutMapping("/{estadoId}")
-	public ResponseEntity<Estado> atualizar(@PathVariable Long estadoId, @RequestBody Estado estado){
-			Optional<Estado> estadoAtual = estadoRepository.findById(estadoId);
+	public ResponseEntity<Estado> atualizar(@PathVariable Long estadoId,
+			@RequestBody Estado estado) {
+		Estado estadoAtual = estadoRepository.findById(estadoId).orElse(null);
+		
+		if (estadoAtual != null) {
+			BeanUtils.copyProperties(estado, estadoAtual, "id");
 			
-			if(estadoAtual.isPresent()) {
-				BeanUtils.copyProperties(estado, estadoAtual.get(), "id");
-				
-				Estado estadoSalva = cadastroEstadoService.salvar(estadoAtual.get());
-				return ResponseEntity.ok(estadoSalva);
-			}
-			
-			return ResponseEntity.notFound().build();
+			estadoAtual = cadastroEstado.salvar(estadoAtual);
+			return ResponseEntity.ok(estadoAtual);
+		}
+		
+		return ResponseEntity.notFound().build();
 	}
 	
 	@DeleteMapping("/{estadoId}")
-	public ResponseEntity<?> remover(@PathVariable Long estadoId){
+	public ResponseEntity<?> remover(@PathVariable Long estadoId) {
 		try {
-			cadastroEstadoService.excluir(estadoId);
+			cadastroEstado.excluir(estadoId);	
 			return ResponseEntity.noContent().build();
+			
+		} catch (EntidadeNaoEncontradaException e) {
+			return ResponseEntity.notFound().build();
 			
 		} catch (EntidadeEmUsoException e) {
 			return ResponseEntity.status(HttpStatus.CONFLICT)
 					.body(e.getMessage());
-		} 
-		catch (EntidadeNaoEncontradaException e) {
-			return ResponseEntity.notFound().build();
 		}
 	}
-	
 	
 }
