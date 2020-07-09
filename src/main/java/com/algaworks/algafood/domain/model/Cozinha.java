@@ -28,12 +28,8 @@ public class Cozinha {
 	@Column(nullable = false)
 	private String nome;
 	
-	@Column(name = "observacao")
-	private String descricao;
-	
 	@JsonIgnore
 	@OneToMany(mappedBy = "cozinha")
 	private List<Restaurante> restaurantes = new ArrayList<>();
 	
 }
-//Parei na aula 7.5
